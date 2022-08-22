@@ -1,0 +1,20 @@
+{
+  "name": "my-conv-api-fn",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "cd ./client && yarn build && cd ..",
+    "start": "conversation-api-function run . | bunyan",
+    "postinstall": "cd ./client && yarn && cd .."
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "conversation-api-function": "0.0.15"
+  },
+  "devDependencies": {
+    "bunyan": "^1.8.15"
+  }
+
+}
