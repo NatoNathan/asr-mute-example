@@ -177,9 +177,38 @@ const route = (app, express) => {
             });
             res.json(userRes.data);
         }
-
-
     });
+
+    // app.post('/api/user/:username', async (req, res) => {
+    //     const { storageClient } = req.nexmo;
+    //     const {user} = req.params;
+
+    //     console.log(storageClient);
+
+    //     const {action} = req.body;
+
+    //     switch (action) {
+    //         case 'available':
+    //             await storageClient.lpush('agents',user);
+    //             res.json({});
+    //             return;
+    //         case 'unavailable':
+    //             await storageClient.lrem('agents',user, 0);
+    //             res.json({});
+    //             return;
+    //         default:
+    //             throw new Error('Action not implemented');
+    //     }
+
+    // });
+
+    // app.get('/api/agent', async (req, res) => {
+    //     const { storageClient } = req.nexmo;
+
+    //     const agent = await storageClient.blpop('agents');
+
+    //     res.json({agent});
+    // });
 
     app.post('/api/auth/login', async (req, res) => {
         const { generateUserToken } = req.nexmo;
