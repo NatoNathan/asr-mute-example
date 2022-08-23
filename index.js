@@ -76,6 +76,7 @@ const voiceAnswer = async (req, res, next) => {
         { action: 'talk', text: 'Please wait for an agent to answer...' },
         {
             "action": "connect",
+            "eventUrl": [`${config.server_url}/api/ip/connect`],
             "from": "441143597011",
             "endpoint": [
                 {
@@ -84,31 +85,31 @@ const voiceAnswer = async (req, res, next) => {
                 }
             ]
         },
-        {
-            "action": "input",
-            "eventUrl": [
-              `${config.server_url}/api/mute`
-            ],
-            "type": [ "speech" ],
-            "speech": {
-              "context": [ "mute" ]
-            }
-        }
+        // {
+        //     "action": "input",
+        //     "eventUrl": [
+        //         `${config.server_url}/api/mute`
+        //     ],
+        //     "type": ["speech"],
+        //     "speech": {
+        //         "context": ["mute"]
+        //     }
+        // }
     ]);
 };
 
 const voiceEvent = async (req, res, next) => {
     const { logger, csClient } = req.nexmo;
 
-    try { 
-        
+    try {
+
         res.json({})
 
     } catch (err) {
-        
+
         logger.error("Error on voiceEvent function")
     }
-    
+
 }
 
 /**
@@ -124,20 +125,66 @@ const route = (app, express) => {
         res.sendFile(path.join(__dirname, "public", "index.html"));
     });
 
-    app.post('/api/mute', async (req, res)=>{
-        const { csClient, logger } = req.nexmo;
-        logger.info({body:req.body}, 'mutting call:');
-        
-        const legRes = await csClient({
-            url:`${DATACENTER}/v0.3/legs/${req.body.uuid}`, 
-            method: 'put',
-            data:{
-                action: 'mute',
-            }
-        });
-
-        res.json([{action:'talk', text: 'your muted'}]);
+    app.post('/api/mute', async (req, res) => {
+        const { csClient, logger, config } = req.nexmo;
+        logger.info({ body: req.body }, 'Muting call:');
+        let ncco = [];
+        try {
+            if (req.body.speech.results) {
+            const speechResults = req.body.speech.results.map(r => r.text);
+            if (speechResults.includes("mute")) {
+                const legRes = await csClient({
+                    url: `${DATACENTER}/v0.3/legs/${req.body.uuid}`,
+                    method: 'put',
+                    data: {
+                        action: 'mute',
+                    }
+                });
+                ncco.push({
+                    action:'talk',
+                    text: 'You are muted'
+                })
+            }}
+        } finally {
+            ncco.push({
+                "action": "input",
+                "eventUrl": [
+                    `${config.server_url}/api/mute`
+                ],
+                "type": ["speech"],
+                "speech": {
+                    "uuid": req.body.uuid,
+                    "context": ["mute"]
+                }
+            });
+            res.json(ncco);
+        }
     });
+
+    app.post('/api/ip/connect', async (req, res) => {
+        const { csClient, logger, config } = req.nexmo;
+        logger.info({body:req.body}, 'IP Connect:');
+
+        res.json([
+            // {
+            //     "action": "input",
+            //     "eventUrl": [
+            //         `${config.server_url}/api/mute`
+            //     ],
+            //     "type": ["speech"],
+            //     "speech": {
+            //         "uuid": req.body.uuid,
+            //         "context": ["mute"]
+            //     }
+            // },
+            {
+                action: 'talk',
+                text: 'Agent Connected'
+            }
+        ]);
+    });
+
+
 
     app.get('/api/user/:username', async (req, res) => {
         const { csClient, logger } = req.nexmo;
@@ -156,17 +203,17 @@ const route = (app, express) => {
         } catch (e) {
             logger.error(e, 'User not found, make new user');
             try {
-            const newUser = await csClient({
-                url: `${DATACENTER}/v0.3/users`,
-                method: 'post',
-                data: {
-                    name: username,
-                    display_name: display ?? username,
-                }
-            });
-            
-            userHref = newUser.data.id;
-        } catch (err) {
+                const newUser = await csClient({
+                    url: `${DATACENTER}/v0.3/users`,
+                    method: 'post',
+                    data: {
+                        name: username,
+                        display_name: display ?? username,
+                    }
+                });
+
+                userHref = newUser.data.id;
+            } catch (err) {
                 logger.error(err, 'could not make user');
             }
 

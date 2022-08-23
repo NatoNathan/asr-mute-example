@@ -1,33 +1,15 @@
+import { Application, NXMCall } from 'nexmo-client';
+import { createContext } from 'preact';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 import './app.css';
-import NexmoClient from 'nexmo-client';
 import vonageLogo from './assets/VonageLogo_Primary_White.svg';
-import { useAuth, useNexmoClient, useUser } from './hooks';
-import { Call } from './components/call';
+import { CallContainer } from './components/callContainer';
+import { Login } from './components/login';
+import { useAuth, useUser, useNexmoClient } from './hooks';
 
 
 
-interface LoginProps {
-  onLogin: (username: string) => void
-}
-
-const Login = ({ onLogin }: LoginProps) => {
-  const [username, setUsername] = useState();
-
-  const onClick = () => {
-    if (username) {
-      onLogin(username);
-    }
-  }
-
-  return (
-    <div class="card">
-      <input class='input' type='text' placeholder='Enter a username' value={username} onInput={e => setUsername((e.target as any).value)} />
-      <button class='btn' onClick={onClick}>Login as {username}</button>
-    </div>
-  );
-};
-
+// const Call = createContext<NXMCall | undefined>(undefined);
 
 
 export function App() {
@@ -39,9 +21,8 @@ export function App() {
   useEffect(() => {
     if (app) {
       app.on('member:call', (member: any, call: any) => {
-        console.log(member);
-        setIncommingCall(call);
-      })
+          setIncommingCall(call);
+      });
     }
   }, [app])
 
@@ -54,9 +35,12 @@ export function App() {
       {!token && <Login onLogin={login} />}
       {user && <h3>{user.name}</h3>}
       {incommingCall && 
-      <Call caller='test' 
-      onAnswer={() => incommingCall.answer()} 
-      onHangup={async () => await incommingCall.hangUp()} status={incommingCall.status} />}
+      <CallContainer caller={incommingCall.from}
+        status={incommingCall.status}
+        onAnswer={() => incommingCall.answer()} 
+        onHangup={async () => await incommingCall.hangUp()}
+      />
+      }
     </>
   )
 }
