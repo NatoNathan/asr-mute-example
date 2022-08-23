@@ -65,19 +65,6 @@ const WS_DATACENTER = `https://ws.nexmo.com`;
 const path = require("path");
 
 const rtcEvent = async (event, { logger, csClient }) => {
-    if (event.type == "app:knocking") {
-        return [{ action: 'talk', text: 'Please wait for the agent to answer...' },
-        {
-            "action": "connect",
-            "from": "441143597011",
-            "endpoint": [
-                {
-                    "type": "app",
-                    "user": "nathan"
-                }
-            ]
-        }];
-    }
 
 }
 
@@ -86,14 +73,14 @@ const voiceAnswer = async (req, res, next) => {
 
 
     return res.json([
-        { action: 'talk', text: 'Please wait for the agent to answer...' },
+        { action: 'talk', text: 'Please wait for an agent to answer...' },
         {
             "action": "connect",
             "from": "441143597011",
             "endpoint": [
                 {
                     "type": "app",
-                    "user": "nathan"
+                    "user": "nathan" // TODO: Need to add some logic randomly pick an available agent 
                 }
             ]
         },
