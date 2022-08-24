@@ -61,11 +61,36 @@ const {
 const DATACENTER = `https://api.nexmo.com`;
 const WS_DATACENTER = `https://ws.nexmo.com`;
 
-
 const path = require("path");
+const words = ['mute'];
 
 const rtcEvent = async (event, { logger, csClient }) => {
+    try {
+        // logger.info({event: event}, 'RTC event');
+        switch (event.type) {
+            case "audio:asr:done":
+                const { results, call_id } = event.body.asr;
+                if (results && results.map(w => w.word).some(w => words.includes(w))) {
+                    //const a = await talk('Your muted', call_id, {csClient, logger});
+                    await csClient({
+                        url: `${DATACENTER}/v0.3/legs/${call_id}`,
+                        method: 'put',
+                        data: {
+                            action: 'mute',
+                        }
+                    });
+                } else {
+                    await startASR(call_id, event.conversation_id, words, { csClient, logger });
+                }
+                return;
+            case "audio:mute:on":
 
+            default:
+                return;
+        }
+    } catch (e) {
+        logger.error({ err: e }, "RTC Error");
+    }
 }
 
 const voiceAnswer = async (req, res, next) => {
@@ -76,7 +101,6 @@ const voiceAnswer = async (req, res, next) => {
         { action: 'talk', text: 'Please wait for an agent to answer...' },
         {
             "action": "connect",
-            "eventUrl": [`${config.server_url}/api/ip/connect`],
             "from": "441143597011",
             "endpoint": [
                 {
@@ -98,11 +122,50 @@ const voiceAnswer = async (req, res, next) => {
     ]);
 };
 
+const talk = async (text, uuid, nexmo) => {
+    const { logger, csClient } = nexmo;
+    logger.info({text: text},'Talk action');
+    return await csClient({
+        url: `${DATACENTER}/v0.3/legs/${uuid}/talk`,
+        method: 'post',
+        data: {
+            text: text,
+            language: 'en-US',
+            voice_name: 'amy'
+        }
+    });
+}
+
+const startASR = async (uuid, conversation_id, speechContext, nexmo) => {
+    const { logger, csClient } = nexmo;
+
+    logger.info(`Starting ASR on leg: ${uuid}`);
+    return await csClient({
+        url: `${DATACENTER}/v0.3/legs/${uuid}/asr`,
+        method: 'post',
+        data: {
+            speech_context: speechContext,
+            conversation_id: conversation_id,
+            active: true,
+            language: 'en-GB',
+            save_audio: false,
+            start_timeout: 10,
+            max_duration: 60,
+            end_on_silence_timeout: 2.0
+        }
+    });
+}
+
 const voiceEvent = async (req, res, next) => {
     const { logger, csClient } = req.nexmo;
-
+    const { status, uuid, conversation_uuid } = req.body;
     try {
-
+        logger.info({ body: req.body }, 'Voice Event');
+        if (status == 'answered') {
+            logger.info('Leg answered, starting ASR on leg');
+            const asr = await startASR(uuid, conversation_uuid, words, req.nexmo);
+            logger.info({ asrRes: asr.body }, 'ASR stated');
+        }
         res.json({})
 
     } catch (err) {
@@ -131,20 +194,21 @@ const route = (app, express) => {
         let ncco = [];
         try {
             if (req.body.speech.results) {
-            const speechResults = req.body.speech.results.map(r => r.text);
-            if (speechResults.includes("mute")) {
-                const legRes = await csClient({
-                    url: `${DATACENTER}/v0.3/legs/${req.body.uuid}`,
-                    method: 'put',
-                    data: {
-                        action: 'mute',
-                    }
-                });
-                ncco.push({
-                    action:'talk',
-                    text: 'You are muted'
-                })
-            }}
+                const speechResults = req.body.speech.results.map(r => r.text);
+                if (speechResults.includes("mute")) {
+                    const legRes = await csClient({
+                        url: `${DATACENTER}/v0.3/legs/${req.body.uuid}`,
+                        method: 'put',
+                        data: {
+                            action: 'mute',
+                        }
+                    });
+                    ncco.push({
+                        action: 'talk',
+                        text: 'You are muted'
+                    })
+                }
+            }
         } finally {
             ncco.push({
                 "action": "input",
@@ -163,7 +227,7 @@ const route = (app, express) => {
 
     app.post('/api/ip/connect', async (req, res) => {
         const { csClient, logger, config } = req.nexmo;
-        logger.info({body:req.body}, 'IP Connect:');
+        logger.info({ body: req.body }, 'IP Connect:');
 
         res.json([
             // {
@@ -308,5 +372,6 @@ const route = (app, express) => {
 module.exports = {
     route,
     voiceAnswer,
-    voiceEvent
+    voiceEvent,
+    rtcEvent
 }
