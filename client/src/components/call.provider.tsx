@@ -9,7 +9,7 @@ export const CallProvider = ({ children, token }: any) => {
     const [status, setStatus] = useState<string | null>(null);
     const [call, setCall] = useState<NXMCall | null>(null);
     const [muted, setMuted] = useState<boolean>(false);
-    const [from, setFrom] = useState<Member|null>(null);
+    const [from, setFrom] = useState<Member | null>(null);
 
 
     useEffect(() => {
@@ -30,15 +30,15 @@ export const CallProvider = ({ children, token }: any) => {
         }
     }, [app]);
 
-    useEffect(()=>{
+    useEffect(() => {
         if (call) {
-            call.conversation.on('audio:mute:on', (member:Member, event:NXMEvent ) => {
+            call.conversation.on('audio:mute:on', (member: Member, event: NXMEvent) => {
                 if (call.conversation.me == member) {
                     setMuted(true);
                 }
             });
 
-            call.conversation.on('audio:mute:off', (member:Member, event:NXMEvent ) => {
+            call.conversation.on('audio:mute:off', (member: Member, event: NXMEvent) => {
                 console.log(member, event);
                 if (call.conversation.me == member) {
                     setMuted(false);
@@ -47,31 +47,23 @@ export const CallProvider = ({ children, token }: any) => {
         }
     }, [call]);
 
-    const onAnswer = useCallback(()=>{
-        if (call) {
-            call.answer();
-        }
+    const onAnswer = useCallback(() => {
+        call?.answer();
     }, [call]);
 
     const onHangup = useCallback(() => {
-        if (call) {
-            call.hangUp();
-        }
+        call?.hangUp();
     }, [call]);
 
-    const onMute = useCallback(()=> {
-        if (call) {
-            call.conversation.me.mute(!muted);
-        }
+    const onMute = useCallback(() => {
+        call?.conversation.me.mute(!muted);
     }, [call, muted]);
 
-    const onReject = useCallback(()=> {
-        if (call) {
-            call.reject();
-        }
+    const onReject = useCallback(() => {
+        call?.reject();
     }, [call]);
 
-    const value = useMemo(()=> ({onAnswer, from, onHangup, onMute, onReject, status, muted }),[onAnswer, from, onHangup, onMute, onReject, status, muted]);
+    const value = useMemo(() => ({ onAnswer, from, onHangup, onMute, onReject, status, muted }), [onAnswer, from, onHangup, onMute, onReject, status, muted]);
 
     return (
         <CallContext.Provider value={value}>
