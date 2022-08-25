@@ -7,7 +7,7 @@ export const CallContainer = ({}) => {
     if (status == 'answered') {
         return (
             <div class="call">
-                <h1>{from?.display_name ?? 'test'}</h1>
+                <h1>{from?.name ?? 'test'}</h1>
                 {muted && <h3>Muted</h3>}
                 <button onClick={onHangup}>Hangup</button>
                 <button class={muted?'muted':''} onClick={onMute}>Mute</button>
