@@ -1,4 +1,4 @@
-import { Application, Member } from "nexmo-client";
+
 import { createContext } from "preact";
 import { useContext } from "preact/hooks";
 
@@ -6,7 +6,7 @@ import { useContext } from "preact/hooks";
 type cb = () => void;
 
 export interface ICallContext {
-    from: Member | null;
+    from: any | null;
     status: string | null;
     muted: boolean;
     onAnswer: cb;

@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "nexmo-client": "^9.1.0",
+    "nexmo-client": "file:/Users/ntamez/git/nexmoinc/nexmoclient-sdk-core-kmp/nexmoclient_js",
     "preact": "^10.10.1"
   },
   "devDependencies": {

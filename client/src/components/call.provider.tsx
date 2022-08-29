@@ -1,67 +1,43 @@
-import { Member, NXMCall, NXMEvent } from "nexmo-client";
+
+import { Invite } from "nexmo-client";
 import { useState, useEffect, useCallback, useMemo } from "preact/hooks";
 import { useAuth, useUser, useNexmoClient } from "../hooks";
 import { CallContext, ICallContext } from "../hooks/useCall";
+import { useNewSDK } from "../hooks/useNewSdk";
 
 export const CallProvider = ({ children, token }: any) => {
-    const { app } = useNexmoClient(token);
+    const { app } = useNewSDK(token);
 
     const [status, setStatus] = useState<string | null>(null);
-    const [call, setCall] = useState<NXMCall | null>(null);
+    const [invite , setInvite ] = useState< Invite| null>(null);
+    const [call, setCall] = useState<any>(null);
     const [muted, setMuted] = useState<boolean>(false);
-    const [from, setFrom] = useState<Member | null>(null);
+    const [from, setFrom] = useState<any | null>(null);
 
 
     useEffect(() => {
         if (app) {
-            app.on('member:call', (member: Member, call: NXMCall) => {
-                setCall(call);
-                setFrom(member);
+            app.on('callInvite', (callInvite ) => {
+                console.error('new invite')
+                setInvite(invite);
             });
 
-            app.on('call:status:changed', (call: NXMCall) => {
-                setStatus(call.status);
+            app.on('connectionChange', (status, p) => {
+                console.error(status);
+                setStatus(status);
 
-                if (call.status == 'completed') {
-                    setCall(null);
+                if (status == 'completed') {
+                    setInvite(null);
                     setFrom(null);
                 }
             });
         }
     }, [app]);
 
-    useEffect(() => {
-        if (call) {
-            call.conversation.on('audio:mute:on', (member: Member, event: NXMEvent) => {
-                if (call.conversation.me == member) {
-                    setMuted(true);
-                }
-            });
-
-            call.conversation.on('audio:mute:off', (member: Member, event: NXMEvent) => {
-                console.log(member, event);
-                if (call.conversation.me == member) {
-                    setMuted(false);
-                }
-            });
-        }
-    }, [call]);
-
-    const onAnswer = useCallback(() => {
-        call?.answer();
-    }, [call]);
-
-    const onHangup = useCallback(() => {
-        call?.hangUp();
-    }, [call]);
-
-    const onMute = useCallback(() => {
-        call?.conversation.me.mute(!muted);
-    }, [call, muted]);
-
-    const onReject = useCallback(() => {
-        call?.reject();
-    }, [call]);
+    const onAnswer = useCallback(async ()=> setCall(await invite?.answerCall()), [invite]);
+    const onReject = useCallback(async ()=> setInvite(await invite?.rejectCall()??null), [invite]);
+    const onHangup = useCallback(async ()=> setCall(await call.hangup()??null), [call]);
+    const onMute = useCallback(async ()=> setMuted(call.mute() && true), [call]);
 
     const value = useMemo(() => ({ onAnswer, from, onHangup, onMute, onReject, status, muted }), [onAnswer, from, onHangup, onMute, onReject, status, muted]);
 
