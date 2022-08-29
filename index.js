@@ -105,7 +105,7 @@ const voiceAnswer = async (req, res, next) => {
             "endpoint": [
                 {
                     "type": "app",
-                    "user": "nathan" // TODO: Need to add some logic randomly pick an available agent 
+                    "user": "agent" // TODO: Need to add some logic randomly pick an available agent 
                 }
             ]
         },
