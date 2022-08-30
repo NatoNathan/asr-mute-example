@@ -105,7 +105,7 @@ const voiceAnswer = async (req, res, next) => {
             "endpoint": [
                 {
                     "type": "app",
-                    "user": "nathan" // TODO: Need to add some logic randomly pick an available agent 
+                    "user": "agent" // TODO: Need to add some logic randomly pick an available agent 
                 }
             ]
         },
@@ -333,35 +333,6 @@ const route = (app, express) => {
             csapi: DATACENTER,
             ws: WS_DATACENTER
         });
-    });
-
-    app.get('/api/conversation/:conversation_name', async (req, res) => {
-        const { csClient } = req.nexmo;
-        const { conversation_name } = req.params;
-        const display = req.query.display;
-        const conversationsRes = await csClient({
-            url: `${DATACENTER}/beta2/conversations?name=${conversation_name}`,
-            method: 'GET',
-        });
-
-        const data = conversationsRes.data._embedded.data;
-
-        if (data.conversations.length < 1) {
-            // Make a new conversation
-            const newConvo = await csClient({
-                url: `${DATACENTER}/beta2/conversations`,
-                method: 'POST',
-                data: {
-                    name: conversation_name,
-                    display_name: display ?? conversation_name,
-                }
-            });
-
-            res.json(newConvo.data);
-        } else {
-            res.json(data.conversations[0]);
-        }
-
     });
 
 
