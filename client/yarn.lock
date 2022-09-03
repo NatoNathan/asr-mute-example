@@ -819,10 +819,10 @@ nanoid@^3.3.4:
   resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.3.4.tgz#730b67e3cd09e2deacf03c027c81c9d9dbc5e8ab"
   integrity sha512-MqBkQh/OHTS2egovRtLk45wEyNXwF+cokD+1YPf9u5VfJiRdAiRwB2froX5Co9Rh20xs4siNPm8naNotSD6RBw==
 
-nexmo-client@^9.1.0:
-  version "9.1.0"
-  resolved "https://registry.yarnpkg.com/nexmo-client/-/nexmo-client-9.1.0.tgz#94d314ceaae065568ec05964055b451d8bf4ac13"
-  integrity sha512-7WaaRx0f8UUke1c+EOODdFm1k3E57NV5789j5YISXEBmrsOD3vRrxHLFzrFl6jLPdz8Ak5poY2kPHXXzYdvZhw==
+nexmo-client@^9.1.2:
+  version "9.1.2"
+  resolved "https://registry.yarnpkg.com/nexmo-client/-/nexmo-client-9.1.2.tgz#73088a52f87e452c054b64f3e69924a534f47019"
+  integrity sha512-GfXxNRr5RBB8ZBI2GULPIHb+Odios2KyiJRPJngjc49SNe1Z2k7cnR981hnb7lJEBskHxZ+o36YTsIgCCKGv3w==
   dependencies:
     "@bugsnag/js" "^6.1.0"
     "@types/socket.io-client" "^1.4.32"

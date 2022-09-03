@@ -6,11 +6,12 @@ export const useAuth = () => {
   const [user, setUser] = useState<string>();
   const [error, setError] = useState();
 
-  const login = (username: string) => {
+  const login = (username: string, phoneNumber: string) => {
     fetch('http://localhost:5001/api/auth/login', {
       method: 'POST',
       body: JSON.stringify({
-        username: username
+        username: username,
+        phoneNumber: phoneNumber
       }),
       headers: { "Content-type": "application/json; charset=UTF-8" }
     })
