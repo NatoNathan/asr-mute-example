@@ -1,6 +1,5 @@
 import { useEffect, useState } from "preact/hooks";
 import NexmoClient from 'nexmo-client';
-
 export const useNewSDK = (token?: string) => {
     const [app, setApp] = useState<NexmoClient>();
     const [error, setError] = useState<Error>();
@@ -10,7 +9,7 @@ export const useNewSDK = (token?: string) => {
             try {
                 const nexmo = new NexmoClient();
                 nexmo.setConfig('https://api.nexmo.com', 'wss://ws.nexmo.com');
-                nexmo.sessionLogin(token);
+                nexmo.createSession(token);
                 setApp(nexmo);
             } catch (e: any) {
                 setError(e);

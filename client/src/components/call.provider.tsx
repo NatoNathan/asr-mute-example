@@ -17,9 +17,9 @@ export const CallProvider = ({ children, token }: any) => {
 
     useEffect(() => {
         if (app) {
-            app.on('callInvite', (callInvite ) => {
-                console.error('new invite')
-                setInvite(invite);
+            app.on('callInvite', async (callInvite) => {
+                // console.dir(callInvite);
+                setInvite(callInvite);
             });
 
             app.on('connectionChange', (status, p) => {
@@ -34,7 +34,9 @@ export const CallProvider = ({ children, token }: any) => {
         }
     }, [app]);
 
-    const onAnswer = useCallback(async ()=> setCall(await invite?.answerCall()), [invite]);
+    const onAnswer = useCallback(async ()=> {
+        setCall(await invite?.answerCall());
+    }, [invite]);
     const onReject = useCallback(async ()=> setInvite(await invite?.rejectCall()??null), [invite]);
     const onHangup = useCallback(async ()=> setCall(await call.hangup()??null), [call]);
     const onMute = useCallback(async ()=> setMuted(call.mute() && true), [call]);
@@ -43,7 +45,7 @@ export const CallProvider = ({ children, token }: any) => {
 
     return (
         <CallContext.Provider value={value}>
-            {call && children}
+            {invite && children}
         </CallContext.Provider>
     );
 };
