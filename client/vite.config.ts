@@ -13,10 +13,10 @@ export default defineConfig({
     outDir: '../public',
     emptyOutDir: true
   },
-  resolve: {
-    alias: {
-      "xmlhttprequest-ssl": "./node_modules/engine.io-client/lib/xmlhttprequest.js",
-      global: "window"
-    }
-  }
+  // resolve: {
+  //   alias: {
+  //     "xmlhttprequest-ssl": "./node_modules/engine.io-client/lib/xmlhttprequest.js",
+  //     global: "window"
+  //   }
+  // }
 })

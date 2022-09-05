@@ -1,16 +1,9 @@
-import { createContext } from 'preact';
-import { useCallback, useEffect, useState } from 'preact/hooks';
 import './app.css';
 import vonageLogo from './assets/VonageLogo_Primary_White.svg';
 import CallProvider from './components/call.provider';
 import { CallContainer } from './components/callContainer';
 import { Login } from './components/login';
 import { useAuth, useUser, useNexmoClient } from './hooks';
-
-
-
-// const Call = createContext<NXMCall | undefined>(undefined);
-
 
 export function App() {
   const { login, token, username, isLoginLoading } = useAuth();
