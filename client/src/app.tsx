@@ -1,4 +1,3 @@
-import { Application, NXMCall } from 'nexmo-client';
 import { createContext } from 'preact';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 import './app.css';

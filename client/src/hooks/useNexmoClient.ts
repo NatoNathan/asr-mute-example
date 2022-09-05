@@ -3,7 +3,7 @@ import NexmoClient from "nexmo-client";
 
 
 export const useNexmoClient = (token?: string) => {
-  const [app, setApp] = useState<Application>();
+  const [app, setApp] = useState<any>();
   const [error, setError] = useState<Error>();
 
   useEffect(() => {
