@@ -1,6 +1,6 @@
 # ASR Mute Example
 
-This is a Example of how to use NCCO to enable ASR (Automated speech recognition) to mute a conversation participants by saying "mute me".
+This is a Example of how to use NCCO to enable ASR (Automated speech recognition) to mute a conversation's participants by saying "mute me".
 
 ## Usage
 
