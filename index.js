@@ -94,37 +94,36 @@ const rtcEvent = async (event, { logger, csClient }) => {
 }
 
 const voiceAnswer = async (req, res, next) => {
-    const { config } = req.nexmo;
+    const { config, logger, storageClient } = req.nexmo;
+    const from = req.body.from;
+        const user = await storageClient.get(from);
 
+        if (!user) {
+            return res.json([
+                { action: 'talk', text: `Please login to webapp first, you are calling on ${from}` }
+            ]);
+        }
 
-    return res.json([
-        { action: 'talk', text: 'Please wait for an agent to answer...' },
-        {
-            "action": "connect",
-            "from": "441143597011",
-            "endpoint": [
-                {
-                    "type": "app",
-                    "user": "agent" // TODO: Need to add some logic randomly pick an available agent 
-                }
-            ]
-        },
-        // {
-        //     "action": "input",
-        //     "eventUrl": [
-        //         `${config.server_url}/api/mute`
-        //     ],
-        //     "type": ["speech"],
-        //     "speech": {
-        //         "context": ["mute"]
-        //     }
-        // }
-    ]);
+        logger.info({ agent: user, from: from }, 'inbound call')
+
+        return res.json([
+            { action: 'talk', text: `Please wait for ${user} to answer...` },
+            {
+                "action": "connect",
+                "from": "441143597011",
+                "endpoint": [
+                    {
+                        "type": "app",
+                        "user": `${user}`
+                    }
+                ]
+            },
+        ]);
 };
 
 const talk = async (text, uuid, nexmo) => {
     const { logger, csClient } = nexmo;
-    logger.info({text: text},'Talk action');
+    logger.info({ text: text }, 'Talk action');
     return await csClient({
         url: `${DATACENTER}/v0.3/legs/${uuid}/talk`,
         method: 'post',
@@ -322,10 +321,11 @@ const route = (app, express) => {
     // });
 
     app.post('/api/auth/login', async (req, res) => {
-        const { generateUserToken } = req.nexmo;
+        const { generateUserToken, storageClient } = req.nexmo;
         const username = req.body.username;
+        const number = req.body.phoneNumber;
 
-        console.log(req);
+        await storageClient.set(number, username);
 
         res.json({
             user: username,
