@@ -34,6 +34,17 @@ export const CallProvider = ({ children, token }: any) => {
         }
     }, [app]);
 
+    useEffect(() => {
+        if (app && call) {
+            app.on('mute', (legId: string, isMuted: boolean) => {
+                // TODO: check if leg is local leg
+                if (true) {
+                    setMuted(isMuted);
+                }
+            })
+        }
+    }, [app, call]);
+
     const onAnswer = useCallback(async ()=> {
         setCall(await invite?.answerCall());
     }, [invite]);
