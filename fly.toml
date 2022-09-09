@@ -8,6 +8,10 @@ processes = []
 [build]
   builder = "heroku/buildpacks:20"
 
+[[statics]]
+  guest_path = "/public"
+  url_prefix = "/"
+
 [env]
   PORT = "8080"
   CONV_API_FUNC_SERVER_URL = "asr-mute-unmute-example-demo.fly.dev"
