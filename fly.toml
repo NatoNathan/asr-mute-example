@@ -1,21 +1,14 @@
-# fly.toml file generated for asr-mute-unmute-example-demo on 2022-09-05T10:32:52+01:00
+# fly.toml file generated for asr-mute-demo on 2022-09-12T11:11:57+01:00
 
-app = "asr-mute-unmute-example-demo"
+app = "asr-mute-demo"
 kill_signal = "SIGINT"
 kill_timeout = 5
 processes = []
 
-[build]
-  builder = "heroku/buildpacks:20"
-
-[[statics]]
-  guest_path = "/public"
-  url_prefix = "/"
-
 [env]
+  CONV_API_FUNC_PORT = "8080"
+  CONV_API_FUNC_SERVER_URL = "asr-mute-demo.fly.dev"
   PORT = "8080"
-  CONV_API_FUNC_SERVER_URL = "asr-mute-unmute-example-demo.fly.dev"
-  CONV_API_FUNC_PORT= "8080"
 
 [experimental]
   allowed_public_ports = []
@@ -46,3 +39,7 @@ processes = []
     interval = "15s"
     restart_limit = 0
     timeout = "2s"
+
+[[statics]]
+  guest_path = "/public"
+  url_prefix = "/"
