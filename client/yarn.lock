@@ -716,14 +716,23 @@ nanoid@^3.3.4:
   resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.3.4.tgz#730b67e3cd09e2deacf03c027c81c9d9dbc5e8ab"
   integrity sha512-MqBkQh/OHTS2egovRtLk45wEyNXwF+cokD+1YPf9u5VfJiRdAiRwB2froX5Co9Rh20xs4siNPm8naNotSD6RBw==
 
-"nexmo-client@file:../../../nexmoinc/nexmoclient-sdk-core-kmp/nexmoclient_js":
-  version "1.0.3"
+nexmo-client@^9.1.3:
+  version "9.1.3"
+  resolved "https://registry.yarnpkg.com/nexmo-client/-/nexmo-client-9.1.3.tgz#70f796ddfaa57642824eb0a47d25bd50dbf0d7cd"
+  integrity sha512-dnKShYEmsPxNPR0EEZVXigP+ZTcNc7bNIA5vtZP6OPqPesHOB1PBFwdep+E5xPXtSPJTFsBNgTeIET4mBBtKUg==
   dependencies:
-    axios "^0.26.0"
-    events "^3.3.0"
-    sdp-transform "^2.14.1"
+    "@bugsnag/js" "^6.1.0"
+    "@types/socket.io-client" "^1.4.32"
+    detect-browser "^4.4.0"
+    is-ip "^3.1.0"
+    loglevel "^1.6.6"
+    loglevel-plugin-prefix "^0.8.4"
+    rtc-stats-adapter "^1.2.0"
+    sdp-transform "^2.14.0"
     socket.io-client "^2.4.0"
-    socketio-wildcard "^2.0.0"
+    uuid "^3.3.2"
+    webrtc-adapter "^7.7.0"
+    wildemitter "1.x"
 
 node-releases@^2.0.6:
   version "2.0.6"
