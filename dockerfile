@@ -1,8 +1,13 @@
 FROM node:16 AS builder
 
+
+
 USER node
 WORKDIR  /app
 COPY --chown=node:node . .
+# Note: You can mount multiple secrets
+RUN --mount=type=secret,id=WORK_NPM_TOKEN \
+    WORK_NPM_TOKEN="$(cat /run/secrets/WORK_NPM_TOKEN)" yarn
 RUN yarn
 RUN yarn build
 

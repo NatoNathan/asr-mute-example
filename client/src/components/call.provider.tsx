@@ -1,5 +1,5 @@
 
-import { Invite } from "nexmo-client";
+import { Invite } from "@nexmoinc/voice-sdk";
 import { useState, useEffect, useCallback, useMemo } from "preact/hooks";
 import { useAuth, useUser, useNexmoClient } from "../hooks";
 import { CallContext, ICallContext } from "../hooks/useCall";

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "preact/hooks";
-import NexmoClient from "nexmo-client";
+import NexmoClient from "@nexmoinc/voice-sdk";
 
 
 export const useNexmoClient = (token?: string) => {
