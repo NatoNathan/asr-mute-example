@@ -1,4 +1,4 @@
-FROM node:16 AS builder
+FROM node:18 AS builder
 
 WORKDIR  /app
 COPY . .
@@ -6,7 +6,7 @@ COPY . .
 RUN --mount=type=secret,id=npmrc,dst=/root/.npmrc yarn
 RUN yarn build
 
-FROM node:16 AS prod
+FROM node:18 AS prod
 ENV NODE_ENV=production
 USER node
 WORKDIR /usr/src/app
