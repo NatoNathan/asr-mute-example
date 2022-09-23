@@ -6,3 +6,4 @@ node_modules/*
 .storageclient.dumb.json
 private.key
 public/
+.npmrc.local

@@ -15,6 +15,7 @@
     "conversation-api-function": "0.0.15"
   },
   "devDependencies": {
-    "bunyan": "^1.8.15"
+    "bunyan": "^1.8.15",
+    "next": "^12.3.1"
   }
 }
