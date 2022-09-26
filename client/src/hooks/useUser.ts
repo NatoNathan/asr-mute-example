@@ -1,4 +1,5 @@
 import { useEffect, useState } from "preact/hooks";
+import apiRequest from "../utils/apiClient";
 
 type User = {
   name: string
@@ -10,7 +11,7 @@ export const useUser = (username?:string): {user?:User, userError?:Error} => {
 
   useEffect( () => {
     if (username) {
-      fetch(`http://localhost:5001/api/user/${username}`)
+      apiRequest(`api/user/${username}`)
         .then(res=> res.json().then(data=> {
           setUser(data);
         }))

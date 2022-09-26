@@ -1,4 +1,5 @@
 import { useState } from "preact/hooks";
+import apiRequest from "../utils/apiClient";
 
 
 export const useAuth = () => {
@@ -7,13 +8,9 @@ export const useAuth = () => {
   const [error, setError] = useState();
 
   const login = (username: string, phoneNumber: string) => {
-    fetch('http://localhost:5001/api/auth/login', {
-      method: 'POST',
-      body: JSON.stringify({
-        username: username,
-        phoneNumber: phoneNumber
-      }),
-      headers: { "Content-type": "application/json; charset=UTF-8" }
+    apiRequest('api/auth/login', 'POST', {
+      username: username,
+      phoneNumber: phoneNumber
     })
       .then(res => res.json().then(data => {
         setToken(data.token);
