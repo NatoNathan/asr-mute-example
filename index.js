@@ -96,9 +96,9 @@ const rtcEvent = async (event, { logger, csClient }) => {
 const voiceAnswer = async (req, res, next) => {
     const { config, logger, storageClient } = req.nexmo;
     const from = req.body.from;
-    logger.info(req.body,'prod_test_body')
+    logger.info({body:req.body},'prod_test_body')
         const user = await storageClient.get(from);
-    logger.info(user,'prod_test_user')
+    logger.info({user},'prod_test_user')
         
 
 
