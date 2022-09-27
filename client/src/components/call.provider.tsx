@@ -1,38 +1,51 @@
 
-import { Invite } from "@nexmoinc/voice-sdk";
+import { Vonage } from "@nexmoinc/voice-sdk/dist/kotlin/clientsdk-core_js";
 import { useState, useEffect, useCallback, useMemo } from "preact/hooks";
-import { useAuth, useUser, useNexmoClient } from "../hooks";
-import { CallContext, ICallContext } from "../hooks/useCall";
+import { Call, CallContext, ICallContext, Invite } from "../hooks/useCall";
 import { useNewSDK } from "../hooks/useNewSdk";
 
 export const CallProvider = ({ children, token }: any) => {
     const { app } = useNewSDK(token);
-
-    const [status, setStatus] = useState<string | null>(null);
-    const [invite , setInvite ] = useState< Invite| null>(null);
-    const [call, setCall] = useState<any>(null);
+    const [invite, setInvite] = useState<Invite>();
+    const [call, setCall] = useState<Call>();
     const [muted, setMuted] = useState<boolean>(false);
-    const [from, setFrom] = useState<any | null>(null);
 
+    const setNewCall = (newCall?:Vonage.VoiceCallJS) => newCall && setCall({
+        mute: newCall.mute,
+        unmute: newCall.unmute,
+        say: newCall.say,
+        async hangup(){
+            await newCall.hangup();
+            setCall(undefined);
+        }
+    });
+
+    const startCall = async (to:string, type: 'app'| 'phone') => {
+        const newCall = await app?.serverCall({
+            to, type
+        });
+        setNewCall(newCall);
+    };
 
     useEffect(() => {
         if (app) {
             app.on('callInvite', async (callInvite) => {
                 // console.dir(callInvite);
-                setInvite(callInvite);
-            });
-
-            app.on('connectionChange', (status, p) => {
-                console.error(status);
-                setStatus(status);
-
-                if (status == 'completed') {
-                    setInvite(null);
-                    setFrom(null);
-                }
+                setInvite({
+                    async answerCall() {
+                        const newCall = await callInvite.answerCall();
+                        setNewCall(newCall);
+                        setInvite(undefined);
+                    },
+                    async rejectCall(){
+                        await callInvite.rejectCall();
+                        setInvite(undefined);
+                    }
+                });
             });
         }
     }, [app]);
+
 
     useEffect(() => {
         if (app && call) {
@@ -45,18 +58,9 @@ export const CallProvider = ({ children, token }: any) => {
         }
     }, [app, call]);
 
-    const onAnswer = useCallback(async ()=> {
-        setCall(await invite?.answerCall());
-    }, [invite]);
-    const onReject = useCallback(async ()=> setInvite(await invite?.rejectCall()??null), [invite]);
-    const onHangup = useCallback(async ()=> setCall(await call.hangup()??null), [call]);
-    const onMute = useCallback(async ()=> setMuted(call.mute() && true), [call]);
-
-    const value = useMemo(() => ({ onAnswer, from, onHangup, onMute, onReject, status, muted }), [onAnswer, from, onHangup, onMute, onReject, status, muted]);
-
     return (
-        <CallContext.Provider value={value}>
-            {invite && children}
+        <CallContext.Provider value={{ call: call, invite: invite, muted, startCall }}>
+            { token && children}
         </CallContext.Provider>
     );
 };

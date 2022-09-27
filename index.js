@@ -95,24 +95,14 @@ const rtcEvent = async (event, { logger, csClient }) => {
 
 const voiceAnswer = async (req, res, next) => {
     const { config, logger, storageClient } = req.nexmo;
-    const from = req.body.from;
-        const user = await storageClient.get(from);
-        
-
-
-        if (!user) {
-            return res.json([
-                { action: 'talk', text: `Please login to webapp first, you are calling on ${from}` }
-            ]);
-        }
-
-        logger.info({ agent: user, from: from }, 'inbound call')
-
+    if (req.body.custom_data) {
+        const user = req.body.to;
+        const type = req.body.custom_data.type;
         return res.json([
             { action: 'talk', text: `Please wait for ${user} to answer...` },
             {
                 "action": "connect",
-                "from": "441143597011",
+                "from": "webapp",
                 "endpoint": [
                     {
                         "type": "app",
@@ -120,7 +110,33 @@ const voiceAnswer = async (req, res, next) => {
                     }
                 ]
             },
+        ])
+    }
+
+    const from = req.body.from;
+    const user = await storageClient.get(from);
+
+    if (!user) {
+        return res.json([
+            { action: 'talk', text: `Please login to webapp first, you are calling on ${from}` }
         ]);
+    }
+
+    logger.info({ agent: user, from: from }, 'inbound call')
+
+    return res.json([
+        { action: 'talk', text: `Please wait for ${user} to answer...` },
+        {
+            "action": "connect",
+            "from": "441143597011",
+            "endpoint": [
+                {
+                    "type": "app",
+                    "user": `${user}`
+                }
+            ]
+        },
+    ]);
 };
 
 const talk = async (text, uuid, nexmo) => {
